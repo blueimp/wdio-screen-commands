@@ -16,8 +16,18 @@ const fs = require('fs')
 const path = require('path')
 const logger = require('@wdio/logger').default
 const imageDiff = require('ffmpeg-image-diff')
-const recordScreen = require('record-screen')
+const ffmpegRecordScreen = require('record-screen')
+const adbRecordScreen = require('adb-record-screen')
 const screenRecordings = new Map()
+
+function recordScreen (fileName, options) {
+  // The ffmpeg version requires either inputFormat or resolution to be set,
+  // neither of which are options for the adb version:
+  if (options.inputFormat || options.resolution) {
+    return ffmpegRecordScreen(fileName, options)
+  }
+  return adbRecordScreen(fileName, options)
+}
 
 function sanitizeBaseName (str) {
   // Remove non-word characters from the start and end of the string.
@@ -119,9 +129,11 @@ function startScreenRecording (test) {
   const videoKey = browser.sessionId + ' ' + test.fullTitle
   const fileName = createFileName(test.fullTitle, '.mp4', options.dir)
   const recording = recordScreen(fileName, options)
+  recording.stopDelay = options.stopDelay
   if (options.deleteOnPass) recording.deleteOnPass = fileName
   screenRecordings.set(videoKey, recording)
   recording.promise.catch(err => logger('screen-recording').error(err))
+  if (options.startDelay) browser.pause(options.startDelay)
 }
 
 async function stopScreenRecording (test) {
@@ -129,6 +141,7 @@ async function stopScreenRecording (test) {
   const recording = screenRecordings.get(videoKey)
   if (recording) {
     screenRecordings.delete(videoKey)
+    if (recording.stopDelay) browser.pause(recording.stopDelay)
     recording.stop()
     await recording.promise.catch(_ => {}) // Handled by start function
     if (test.passed && recording.deleteOnPass) {

@@ -2,6 +2,20 @@
 [WebdriverIO](https://webdriver.io/) commands to capture and record browser
 screens.
 
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Options](#options)
+- [License](#license)
+- [Author](#author)
+
+## Requirements
+The screenshot diffing and screen recording functionality requires
+[ffmpeg](https://www.ffmpeg.org/) to be installed and available in the `PATH`.  
+Screen recording for Android devices requires
+[adb](https://developer.android.com/studio/command-line/adb) to be installed and
+available in the `PATH`.
+
 ## Installation
 
 ```sh
@@ -16,26 +30,11 @@ const cmds = require('wdio-screen-commands')
 
 module.exports = {
   screenshots: {
-    dir: 'reports/screenshots', // screenshots directory
-    saveOnFail: true,           // automatically save screenshots on test fail
-    saveOnPass: true,           // automatically save screenshots on test pass
-    imageDiff: {                // see github.com/blueimp/node-ffmpeg-image-diff
-      ssim: true,               // false or true
-      similarity: 0.01,         // 1.0 - 0.01
-      blend: 1.0,               // 1.0 - 0.0
-      opacity: 0.1,             // 1.0 - 0.0
-      color: 'magenta'          // magenta, yellow, cyan, red, green, blue or ''
-    }
+    saveOnFail: true
   },
-  videos: {                     // see github.com/blueimp/record-screen
-    enabled: true,              // enable screen recordings
-    deleteOnPass: false         // keep screen recordings when tests pass
-    dir: 'reports/videos',      // videos directory
-    resolution: '1440x900',     // Display resolution
-    fps: 15,                    // Frames per second
-    hostname: 'localhost',      // X11 server hostname, default: config.hostname
-    display: '0',               // X11 server display
-    pixelFormat: 'yuv420p'      // Output pixel format
+  videos: {
+    enabled: true,
+    resolution: '1440x900'
   },
   before: () => {
     browser.addCommand('saveScreenshotByName', cmds.saveScreenshotByName)
@@ -66,6 +65,51 @@ describe('screenshots', () => {
 
 See [blueimp/wdio](https://github.com/blueimp/wdio) for a complete setup
 example.
+
+## Options
+
+```js
+const defaultOptions = {
+  screenshots: {
+    dir: 'reports/screenshots', // Screenshots directory
+    saveOnFail: false,          // Automatically save screenshots on test fail
+    saveOnPass: false,          // Automatically save screenshots on test pass
+    // see github.com/blueimp/node-ffmpeg-image-diff
+    imageDiff: {
+      ssim: true,               // false or true
+      similarity: 0.01,         // 1.0 - 0.01
+      blend: 1.0,               // 1.0 - 0.0
+      opacity: 0.1,             // 1.0 - 0.0
+      color: 'magenta'          // magenta, yellow, cyan, red, green, blue or ''
+    }
+  },
+  videos: {
+    // shared options
+    enabled: false,         // Enable screen recordings
+    deleteOnPass: false,    // Keep screen recordings when tests pass
+    startDelay: undefined,  // Seconds, execution delay after recording start
+    stopDelay: undefined,   // Seconds, execution delay before recording stop
+    hostname: 'localhost',  // Server/device hostname
+    port: 9100,             // Server/device port, ignored for x11grab
+    // ffmpeg options - see github.com/blueimp/record-screen
+    inputFormat: 'x11grab', // Input format, use 'mjpeg' for an MJPEG stream
+    resolution: undefined,  // Display resolution
+    fps: 15,                // Frames per second to record from input
+    protocol: 'http:',      // Server protocol, ignored for x11grab
+    display: '0',           // X11 server display, only used for x11grab
+    videoCodec: undefined,  // Video codec, defaults to libx264
+    pixelFormat: 'yuv420p', // Output pixel format
+    // adb options - see github.com/blueimp/adb-record-screen
+    serial: undefined,      // Use device with given serial
+    transportID: undefined, // Use device with given transport ID
+    bugreport: undefined,   // Set to `true` to add additional info to the video
+    size: undefined,        // WIDTHxHEIGHT, defaults to native resolution
+    bitRate: undefined,     // Bits per second, default value is 4000000 (4Mbps)
+    timeLimit: undefined,   // Seconds, default + maximum value is 180 (3 mins)
+    pullDelay: 200          // Milliseconds, delay before pulling the video file
+  }
+}
+```
 
 ## License
 Released under the [MIT license](https://opensource.org/licenses/MIT).
