@@ -90,15 +90,19 @@ const defaultOptions = {
     startDelay: undefined,  // Seconds, execution delay after recording start
     stopDelay: undefined,   // Seconds, execution delay before recording stop
     hostname: 'localhost',  // Server/device hostname
-    port: 9100,             // Server/device port, ignored for x11grab
+    port: 5555,             // Server/device port, defaults to 9100 for ffmpeg
     // ffmpeg options - see github.com/blueimp/record-screen
     inputFormat: 'x11grab', // Input format, use 'mjpeg' for an MJPEG stream
-    resolution: undefined,  // Display resolution
+    resolution: undefined,  // Display resolution (WIDTHxHEIGHT)
     fps: 15,                // Frames per second to record from input
-    protocol: 'http:',      // Server protocol, ignored for x11grab
-    display: '0',           // X11 server display, only used for x11grab
-    videoCodec: undefined,  // Video codec, defaults to libx264
+    videoCodec: undefined,  // Video codec, defaults to libx264 for mp4 output
     pixelFormat: 'yuv420p', // Output pixel format
+    display: '0',           // X11 server display, only used for x11grab
+    protocol: 'http',       // Server protocol
+    username: undefined,    // URL username property
+    password: undefined,    // URL password property
+    pathname: undefined,    // URL pathname property
+    search: undefined       // URL search property
     // adb options - see github.com/blueimp/adb-record-screen
     serial: undefined,      // Use device with given serial
     transportID: undefined, // Use device with given transport ID
