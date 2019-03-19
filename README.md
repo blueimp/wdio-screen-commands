@@ -90,7 +90,7 @@ const defaultOptions = {
     startDelay: undefined,  // Seconds, execution delay after recording start
     stopDelay: undefined,   // Seconds, execution delay before recording stop
     hostname: 'localhost',  // Server/device hostname
-    port: 5555,             // Server/device port, defaults to 9100 for ffmpeg
+    port: 5555,             // Server/device port, defaults to 9000 for ffmpeg
     // ffmpeg options - see github.com/blueimp/record-screen
     inputFormat: 'x11grab', // Input format, use 'mjpeg' for an MJPEG stream
     resolution: undefined,  // Display resolution (WIDTHxHEIGHT)
