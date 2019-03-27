@@ -92,7 +92,7 @@ const defaultOptions = {
     hostname: 'localhost',  // Server/device hostname
     port: 5555,             // Server/device port, defaults to 9000 for ffmpeg
     // ffmpeg options - see github.com/blueimp/record-screen
-    loglevel: 'fatal',      // Only show errors that prevent ffmpeg to continue
+    loglevel: undefined,    // Log level, defaults to "info"
     inputFormat: 'x11grab', // Input format, use 'mjpeg' for an MJPEG stream
     resolution: undefined,  // Display resolution (WIDTHxHEIGHT)
     fps: 15,                // Frames per second to record from input
