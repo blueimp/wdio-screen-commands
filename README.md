@@ -58,7 +58,11 @@ describe('screenshots', () => {
     // Save screenshot by name, into a browser-specific sub-directory:
     browser.saveScreenshotByName('save screenshot by name')
     // Save screenshot and compare with same file from previous run:
-    browser.saveAndDiffScreenshot('save and diff screenshot')
+    const ssim = browser.saveAndDiffScreenshot('save and diff screenshot')
+    if (ssim && ssim.All < 1) {
+      // Screenshot differs from previous run
+      // See also: https://github.com/blueimp/node-ffmpeg-image-diff
+    }
   })
 })
 ```
@@ -74,7 +78,7 @@ const defaultOptions = {
     dir: 'reports/screenshots', // Screenshots directory
     saveOnFail: false,          // Automatically save screenshots on test fail
     saveOnPass: false,          // Automatically save screenshots on test pass
-    // see github.com/blueimp/node-ffmpeg-image-diff
+    // imageDiff options - see https://github.com/blueimp/node-ffmpeg-image-diff
     imageDiff: {
       ssim: true,               // false or true
       similarity: 0.01,         // 1.0 - 0.01
@@ -91,7 +95,7 @@ const defaultOptions = {
     stopDelay: undefined,   // Seconds, execution delay before recording stop
     hostname: 'localhost',  // Server/device hostname
     port: 5555,             // Server/device port, defaults to 9000 for ffmpeg
-    // ffmpeg options - see github.com/blueimp/record-screen
+    // ffmpeg options - see https://github.com/blueimp/record-screen
     loglevel: undefined,    // Log level, defaults to "info"
     inputFormat: 'x11grab', // Input format, use 'mjpeg' for an MJPEG stream
     resolution: undefined,  // Display resolution (WIDTHxHEIGHT)
@@ -104,7 +108,7 @@ const defaultOptions = {
     password: undefined,    // URL password property
     pathname: undefined,    // URL pathname property
     search: undefined       // URL search property
-    // adb options - see github.com/blueimp/adb-record-screen
+    // adb options - see https://github.com/blueimp/adb-record-screen
     serial: undefined,      // Use device with given serial
     transportID: undefined, // Use device with given transport ID
     bugreport: undefined,   // Set to `true` to add additional info to the video

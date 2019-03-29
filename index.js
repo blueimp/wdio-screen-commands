@@ -115,6 +115,7 @@ async function saveAndDiffScreenshot (name) {
       fs.unlinkSync(fileNameOriginal)
       fs.unlinkSync(fileNameDifference)
     }
+    return ssim
   } else {
     browser.saveScreenshot(fileName)
   }
