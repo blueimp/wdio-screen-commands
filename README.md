@@ -112,6 +112,7 @@ const defaultOptions = {
     // adb options - see https://github.com/blueimp/adb-record-screen
     serial: undefined,      // Use device with given serial
     transportID: undefined, // Use device with given transport ID
+    waitTimeout: 5000,      // Device wait timeout (ms), 0 disables the wait
     bugreport: undefined,   // Set to `true` to add additional info to the video
     size: undefined,        // WIDTHxHEIGHT, defaults to native resolution
     bitRate: undefined,     // Bits per second, default value is 4000000 (4Mbps)
