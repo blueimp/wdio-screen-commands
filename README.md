@@ -105,19 +105,19 @@ const defaultOptions = {
     rotate: undefined,      // Rotate metadata, set to 90 to rotate left by 90°
     display: '0',           // X11 server display, only used for x11grab
     protocol: 'http',       // Server protocol
-    username: undefined,    // URL username property
-    password: undefined,    // URL password property
-    pathname: undefined,    // URL pathname property
-    search: undefined       // URL search property
+    username: undefined,    // Basic auth username
+    password: undefined,    // Basic auth password
+    pathname: undefined,    // URL pathname component
+    search: undefined       // URL query parameter
     // adb options - see https://github.com/blueimp/adb-record-screen
     serial: undefined,      // Use device with given serial
     transportID: undefined, // Use device with given transport ID
     waitTimeout: 5000,      // Device wait timeout (ms), 0 disables the wait
     bugreport: undefined,   // Set to `true` to add additional info to the video
     size: undefined,        // WIDTHxHEIGHT, defaults to native resolution
-    bitRate: undefined,     // Bits per second, default value is 4000000 (4Mbps)
-    timeLimit: undefined,   // Seconds, default + maximum value is 180 (3 mins)
-    pullDelay: 200          // Milliseconds, delay before pulling the video file
+    bitRate: 4000000,       // Bits per second, default is 4Mbps
+    timeLimit: 180,         // Time limit (s), maximum is 180 (3 mins)
+    pullDelay: 200          // Delay (ms) before pulling the video file
   }
 }
 ```
