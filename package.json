@@ -26,20 +26,20 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "@wdio/logger": "^5.7.8",
-    "adb-record-screen": "^1.4.0",
-    "ffmpeg-image-diff": "^1.4.0",
-    "record-screen": "^3.5.0"
+    "@wdio/logger": "5",
+    "adb-record-screen": "1",
+    "ffmpeg-image-diff": "1",
+    "record-screen": "3"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^11.13.0",
-    "eslint": "^5.16.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "@types/mocha": "5",
+    "@types/node": "12",
+    "eslint": "6",
+    "eslint-config-standard": "13",
+    "eslint-plugin-import": "2",
+    "eslint-plugin-node": "9",
+    "eslint-plugin-promise": "4",
+    "eslint-plugin-standard": "4"
   },
   "scripts": {
     "test": "eslint .",
