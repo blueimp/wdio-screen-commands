@@ -11,7 +11,27 @@
 // @ts-check
 'use strict'
 
-/* global browser */
+/**
+ * @typedef BrowserObject
+ * @property {object} capabilities
+ * @property {string} capabilities.browserName
+ * @property {string} [capabilities.browserVersion]
+ * @property {string} [capabilities.platformVersion]
+ * @property {string} [capabilities.version]
+ * @property {string} [capabilities.platformName]
+ * @property {string} [capabilities.platform]
+ * @property {string} [capabilities.deviceName]
+ * @property {object} config
+ * @property {string} sessionId
+ * @property {Function} saveScreenshot
+ * @property {Function} pause
+ */
+
+/**
+ * @type {BrowserObject}
+ */
+// @ts-ignore
+const browser = global.browser
 
 const fs = require('fs')
 const path = require('path')
@@ -24,19 +44,27 @@ const adbRecordScreen = require('adb-record-screen')
 const screenRecordings = new Map()
 
 /**
- * @typedef {Object} Result
+ * @namespace WebdriverIO
+ * @typedef WebdriverIO.Test
+ * @property {string} [fullTitle]
+ * @property {string} [fullName]
+ * @property {boolean} passed
+ */
+
+/**
+ * @typedef {object} Result
  * @property {string} stdout Screen recording standard output
  * @property {string} stderr Screen recording error output
  */
 
 /**
- * @typedef {Object} Recording
+ * @typedef {object} Recording
  * @property {Promise<Result>} promise Promise for the active screen recording
- * @property {function} stop Function to stop the screen recording
+ * @property {Function} stop Function to stop the screen recording
  */
 
 /**
- * @typedef {Object} Options Screen recording options
+ * @typedef {object} Options Screen recording options
  * @property {string} [hostname=localhost] Server hostname
  * @property {number} [port=5555] Server port, defaults to 9000 for ffmpeg
  * @property {string} [loglevel=info] Log verbosity level
@@ -64,11 +92,12 @@ const screenRecordings = new Map()
 
 /**
  * Starts a screen recording via ffmpeg or adb shell screenrecord.
+ *
  * @param {string} fileName Output file name
  * @param {Options} [options] Screen recording options
- * @returns {Recording}
+ * @returns {Recording} Recording object
  */
-function recordScreen (fileName, options) {
+function recordScreen(fileName, options) {
   // The ffmpeg version requires either inputFormat or resolution to be set,
   // neither of which are options for the adb version:
   if (options.inputFormat || options.resolution) {
@@ -79,10 +108,11 @@ function recordScreen (fileName, options) {
 
 /**
  * Sanitizes the basename of a file path.
+ *
  * @param {string} str Input string
- * @returns {string}
+ * @returns {string} Sanitized string
  */
-function sanitizeBaseName (str) {
+function sanitizeBaseName(str) {
   // Remove non-word characters from the start and end of the string.
   // Replace everything but word characters, dots and spaces with a dash.
   return str.replace(/^\W+|\W+$/g, '').replace(/[^\w. -]+/g, '-')
@@ -90,12 +120,13 @@ function sanitizeBaseName (str) {
 
 /**
  * Creates a sanitized file path with browser info as directory.
+ *
  * @param {string} name Base filename
  * @param {string} ext File extension
  * @param {string} [baseDir=reports] Base directory
- * @returns {string}
+ * @returns {string} File path
  */
-function createFileName (name, ext, baseDir = 'reports') {
+function createFileName(name, ext, baseDir = 'reports') {
   const caps = browser.capabilities
   const dir = path.join(
     baseDir,
@@ -127,9 +158,10 @@ function createFileName (name, ext, baseDir = 'reports') {
 
 /**
  * Saves a screenshot for the given name.
+ *
  * @param {string} name Screenshot name
  */
-function saveScreenshotByName (name) {
+function saveScreenshotByName(name) {
   const options = Object.assign(
     { dir: 'reports/screenshots' },
     browser.config.screenshots
@@ -140,9 +172,10 @@ function saveScreenshotByName (name) {
 
 /**
  * Saves a screenshot for the given test.
+ *
  * @param {WebdriverIO.Test} test WebdriverIO Test
  */
-function saveScreenshotByTest (test) {
+function saveScreenshotByTest(test) {
   const options = browser.config.screenshots || {}
   const fullTitle = test.fullTitle || test.fullName
   if (test.passed) {
@@ -162,10 +195,11 @@ function saveScreenshotByTest (test) {
 
 /**
  * Saves and diffs a screenshot for the given name.
+ *
  * @param {string} name Screenshot name
- * @returns {Promise<ImageDiffResult>}
+ * @returns {Promise<ImageDiffResult>} Resolves with the image diff results
  */
-async function saveAndDiffScreenshot (name) {
+async function saveAndDiffScreenshot(name) {
   const options = Object.assign(
     { dir: 'reports/screenshots' },
     browser.config.screenshots
@@ -200,16 +234,16 @@ async function saveAndDiffScreenshot (name) {
       fs.unlinkSync(fileNameDifference)
     }
     return ssim
-  } else {
-    browser.saveScreenshot(fileName)
   }
+  browser.saveScreenshot(fileName)
 }
 
 /**
  * Starts a streen recording for the given test.
+ *
  * @param {WebdriverIO.Test} test WebdriverIO Test
  */
-function startScreenRecording (test) {
+function startScreenRecording(test) {
   const options = Object.assign(
     { dir: 'reports/videos', hostname: browser.config.hostname },
     browser.config.videos
@@ -229,10 +263,11 @@ function startScreenRecording (test) {
 
 /**
  * Stops the screen recording for the given test.
+ *
  * @param {WebdriverIO.Test} test WebdriverIO Test
- * @returns {Promise<Result>}
+ * @returns {Promise<Result>} Resolves with the recording result
  */
-async function stopScreenRecording (test) {
+async function stopScreenRecording(test) {
   const videoKey = browser.sessionId + ' ' + (test.fullTitle || test.fullName)
   const options = screenRecordings.get(videoKey)
   if (options) {
@@ -240,7 +275,7 @@ async function stopScreenRecording (test) {
     screenRecordings.delete(videoKey)
     if (options.stopDelay) browser.pause(options.stopDelay)
     recording.stop()
-    await recording.promise.catch(_ => {}) // Handled by start function
+    await recording.promise.catch(() => {}) // Handled by start function
     if (test.passed && options.deleteOnPass) {
       fs.unlinkSync(options.fileName)
     }
