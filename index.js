@@ -10,27 +10,7 @@
 
 'use strict'
 
-/**
- * @typedef BrowserObject
- * @property {object} capabilities
- * @property {string} capabilities.browserName
- * @property {string} [capabilities.browserVersion]
- * @property {string} [capabilities.platformVersion]
- * @property {string} [capabilities.version]
- * @property {string} [capabilities.platformName]
- * @property {string} [capabilities.platform]
- * @property {string} [capabilities.deviceName]
- * @property {object} config
- * @property {string} sessionId
- * @property {Function} saveScreenshot
- * @property {Function} pause
- */
-
-/**
- * @type {BrowserObject}
- */
-// @ts-ignore
-const browser = global.browser
+/* global browser */
 
 const fs = require('fs')
 const path = require('path')
