@@ -40,10 +40,11 @@
     "eslint-plugin-jsdoc": "15",
     "eslint-plugin-node": "9",
     "eslint-plugin-prettier": "3",
-    "prettier": "1"
+    "prettier": "1",
+    "typescript": "3"
   },
   "scripts": {
-    "test": "eslint .",
+    "test": "eslint . && tsc",
     "postversion": "git push --tags origin HEAD && npm publish"
   },
   "main": "index.js"
