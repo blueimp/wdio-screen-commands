@@ -1,6 +1,9 @@
 # WebdriverIO Screen Commands
+
 [WebdriverIO](https://webdriver.io/) commands to capture and record browser
 screens.
+
+## Contents
 
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -10,6 +13,7 @@ screens.
 - [Author](#author)
 
 ## Requirements
+
 The screenshot diffing and screen recording functionality requires
 [ffmpeg](https://www.ffmpeg.org/) to be installed and available in the `PATH`.  
 Screen recording for Android devices requires
@@ -23,6 +27,7 @@ npm install wdio-screen-commands
 ```
 
 ## Usage
+
 Add the following to your WebdriverIO config:
 
 ```js
@@ -123,7 +128,9 @@ const defaultOptions = {
 ```
 
 ## License
+
 Released under the [MIT license](https://opensource.org/licenses/MIT).
 
 ## Author
+
 [Sebastian Tschan](https://blueimp.net/)
