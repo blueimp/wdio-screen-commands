@@ -43,9 +43,25 @@
     "prettier": "1",
     "typescript": "3"
   },
+  "eslintConfig": {
+    "extends": [
+      "blueimp",
+      "plugin:jsdoc/recommended",
+      "plugin:node/recommended",
+      "plugin:prettier/recommended"
+    ]
+  },
+  "prettier": {
+    "proseWrap": "always",
+    "semi": false,
+    "singleQuote": true
+  },
   "scripts": {
     "test": "eslint . && tsc",
     "postversion": "git push --tags origin HEAD && npm publish"
   },
+  "files": [
+    "index.js"
+  ],
   "main": "index.js"
 }
