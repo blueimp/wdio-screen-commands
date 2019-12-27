@@ -105,6 +105,7 @@ const defaultOptions = {
     inputFormat: 'x11grab', // Input format, use 'mjpeg' for an MJPEG stream
     resolution: undefined,  // Display resolution (WIDTHxHEIGHT)
     fps: 15,                // Frames per second to record from input
+    videoFilter: undefined, // Video filters, e.g. 'crop=480:300:960:600'
     videoCodec: undefined,  // Video codec, defaults to libx264 for mp4 output
     pixelFormat: 'yuv420p', // Output pixel format
     rotate: undefined,      // Rotate metadata, set to 90 to rotate left by 90°
