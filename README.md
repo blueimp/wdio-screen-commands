@@ -23,7 +23,7 @@ available in the `PATH`.
 ## Installation
 
 ```sh
-npm install wdio-screen-commands
+npm install --save-dev wdio-screen-commands
 ```
 
 ## Usage
