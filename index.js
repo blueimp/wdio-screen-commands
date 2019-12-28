@@ -50,6 +50,7 @@ const screenRecordings = new Map()
  * @property {string} [inputFormat=x11grab] Input format
  * @property {string} [resolution] Display resolution (WIDTHxHEIGHT)
  * @property {number} [fps=15] Frames per second to record from input
+ * @property {string} [videoFilter] Video filters to apply
  * @property {string} [videoCodec] Video codec
  * @property {string} [pixelFormat=yuv420p] Output pixel format
  * @property {number} [rotate] Rotate metadata, set to 90 to rotate left by 90°
