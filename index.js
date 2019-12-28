@@ -203,11 +203,9 @@ async function saveAndDiffScreenshot(name) {
       fileName,
       fileNameDifference,
       options.imageDiff
-      // @ts-ignore ignore error function not being declared
     ).catch(err => imageDiffLogger.error(err))
     if (!ssim) return
     if (ssim.All < 1) {
-      // @ts-ignore ignore warn function not being declared
       imageDiffLogger.warn(name, ssim)
     } else {
       fs.unlinkSync(fileNameOriginal)
@@ -236,7 +234,6 @@ function startScreenRecording(test) {
   options.recording = recording
   options.fileName = fileName
   screenRecordings.set(videoKey, options)
-  // @ts-ignore ignore error function not being declared
   recording.promise.catch(err => screenRecordingLogger.error(err))
   if (options.startDelay) browser.pause(options.startDelay)
 }
