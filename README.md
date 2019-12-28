@@ -15,10 +15,21 @@ screens.
 ## Requirements
 
 The screenshot diffing and screen recording functionality requires
-[ffmpeg](https://www.ffmpeg.org/) to be installed and available in the `PATH`.  
+[ffmpeg](https://www.ffmpeg.org/) to be installed and available in the `PATH`.
+
 Screen recording for Android devices requires
 [adb](https://developer.android.com/studio/command-line/adb) to be installed and
 available in the `PATH`.
+
+Screen recording on Linux using the default `x11grab` input format requires the
+[X Window System](https://en.wikipedia.org/wiki/X_Window_System) to accept TCP
+connections and requires setting the `resolution` option to the correct display
+resolution.
+
+Screen recording using the `mjpeg` input format requires an
+[MJPEG](https://en.wikipedia.org/wiki/Motion_JPEG) server streaming via HTTP.  
+Please see [blueimp/mjpeg-server](https://github.com/blueimp/mjpeg-server) for a
+sample implementation.
 
 ## Installation
 
@@ -27,6 +38,13 @@ npm install --save-dev wdio-screen-commands
 ```
 
 ## Usage
+
+**Please note:**
+
+> The following setup assumes that [ffmpeg](https://www.ffmpeg.org/) is
+> available in the `PATH` and an MJPEG server (e.g.
+> [blueimp/mjpeg-server](https://github.com/blueimp/mjpeg-server)) is providing
+> a screencast on port `9000` of the WebDriver host.
 
 Add the following to your WebdriverIO config:
 
@@ -39,7 +57,9 @@ module.exports = {
   },
   videos: {
     enabled: true,
-    resolution: '1440x900'
+    inputFormat: 'mjpeg',
+    startDelay: 500,
+    stopDelay: 500
   },
   before: () => {
     browser.addCommand('saveScreenshotByName', cmds.saveScreenshotByName)
@@ -72,7 +92,7 @@ describe('screenshots', () => {
 })
 ```
 
-See [blueimp/wdio](https://github.com/blueimp/wdio) for a complete setup
+Please see [blueimp/wdio](https://github.com/blueimp/wdio) for a complete setup
 example.
 
 ## Options
