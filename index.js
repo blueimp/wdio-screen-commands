@@ -14,6 +14,10 @@
 
 const fs = require('fs')
 const path = require('path')
+const { promisify } = require('util')
+const mkdir = promisify(fs.mkdir)
+const rename = promisify(fs.rename)
+const unlink = promisify(fs.unlink)
 const logger = require('@wdio/logger').default
 const imageDiffLogger = logger('image-diff')
 const screenRecordingLogger = logger('screen-recording')
@@ -104,9 +108,9 @@ function sanitizeBaseName(str) {
  * @param {string} name Base filename
  * @param {string} ext File extension
  * @param {string} [baseDir=reports] Base directory
- * @returns {string} File path
+ * @returns {Promise<string>} Resolves with the file path
  */
-function createFileName(name, ext, baseDir = 'reports') {
+async function createFileName(name, ext, baseDir = 'reports') {
   const caps = browser.capabilities
   const dir = path.join(
     baseDir,
@@ -128,7 +132,7 @@ function createFileName(name, ext, baseDir = 'reports') {
         .join(' ')
     )
   )
-  fs.mkdirSync(dir, { recursive: true })
+  await mkdir(dir, { recursive: true })
   return path.format({
     dir,
     name: sanitizeBaseName(name),
@@ -141,13 +145,13 @@ function createFileName(name, ext, baseDir = 'reports') {
  *
  * @param {string} name Screenshot name
  */
-function saveScreenshotByName(name) {
+async function saveScreenshotByName(name) {
   const options = Object.assign(
     { dir: 'reports/screenshots' },
     browser.config.screenshots
   )
-  const fileName = createFileName(name, '.png', options.dir)
-  browser.saveScreenshot(fileName)
+  const fileName = await createFileName(name, '.png', options.dir)
+  await browser.saveScreenshot(fileName)
 }
 
 /**
@@ -155,13 +159,13 @@ function saveScreenshotByName(name) {
  *
  * @param {WebdriverIO.Test} test WebdriverIO Test
  */
-function saveScreenshotByTest(test) {
+async function saveScreenshotByTest(test) {
   const options = browser.config.screenshots || {}
   const fullTitle = test.fullTitle || test.fullName
   if (test.passed) {
-    if (options.saveOnPass) saveScreenshotByName(fullTitle + ' PASSED')
+    if (options.saveOnPass) await saveScreenshotByName(fullTitle + ' PASSED')
   } else {
-    if (options.saveOnFail) saveScreenshotByName(fullTitle + ' FAILED')
+    if (options.saveOnFail) await saveScreenshotByName(fullTitle + ' FAILED')
   }
 }
 
@@ -184,20 +188,14 @@ async function saveAndDiffScreenshot(name) {
     { dir: 'reports/screenshots' },
     browser.config.screenshots
   )
-  const fileName = createFileName(name, '.png', options.dir)
+  const fileName = await createFileName(name, '.png', options.dir)
   if (fs.existsSync(fileName)) {
-    const fileNameOriginal = createFileName(
-      name + ' original',
-      '.png',
-      options.dir
-    )
-    const fileNameDifference = createFileName(
-      name + ' diff',
-      '.png',
-      options.dir
-    )
-    fs.renameSync(fileName, fileNameOriginal)
-    browser.saveScreenshot(fileName)
+    const [fileNameOriginal, fileNameDifference] = await Promise.all([
+      createFileName(name + ' original', '.png', options.dir),
+      createFileName(name + ' diff', '.png', options.dir)
+    ])
+    await rename(fileName, fileNameOriginal)
+    await browser.saveScreenshot(fileName)
     const ssim = await imageDiff(
       fileNameOriginal,
       fileName,
@@ -208,12 +206,11 @@ async function saveAndDiffScreenshot(name) {
     if (ssim.All < 1) {
       imageDiffLogger.warn(name, ssim)
     } else {
-      fs.unlinkSync(fileNameOriginal)
-      fs.unlinkSync(fileNameDifference)
+      await Promise.all([unlink(fileNameOriginal), unlink(fileNameDifference)])
     }
     return ssim
   }
-  browser.saveScreenshot(fileName)
+  await browser.saveScreenshot(fileName)
 }
 
 /**
@@ -221,7 +218,7 @@ async function saveAndDiffScreenshot(name) {
  *
  * @param {WebdriverIO.Test} test WebdriverIO Test
  */
-function startScreenRecording(test) {
+async function startScreenRecording(test) {
   const options = Object.assign(
     { dir: 'reports/videos', hostname: browser.config.hostname },
     browser.config.videos
@@ -229,13 +226,13 @@ function startScreenRecording(test) {
   if (!options.enabled) return
   const fullTitle = test.fullTitle || test.fullName
   const videoKey = browser.sessionId + ' ' + fullTitle
-  const fileName = createFileName(fullTitle, '.mp4', options.dir)
+  const fileName = await createFileName(fullTitle, '.mp4', options.dir)
   const recording = recordScreen(fileName, options)
   options.recording = recording
   options.fileName = fileName
   screenRecordings.set(videoKey, options)
   recording.promise.catch(err => screenRecordingLogger.error(err))
-  if (options.startDelay) browser.pause(options.startDelay)
+  if (options.startDelay) await browser.pause(options.startDelay)
 }
 
 /**
@@ -250,11 +247,11 @@ async function stopScreenRecording(test) {
   if (options) {
     const recording = options.recording
     screenRecordings.delete(videoKey)
-    if (options.stopDelay) browser.pause(options.stopDelay)
+    if (options.stopDelay) await browser.pause(options.stopDelay)
     recording.stop()
     await recording.promise.catch(() => {}) // Handled by start function
     if (test.passed && options.deleteOnPass) {
-      fs.unlinkSync(options.fileName)
+      await unlink(options.fileName)
     }
     return recording.promise
   }

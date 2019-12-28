@@ -65,12 +65,14 @@ module.exports = {
     browser.addCommand('saveScreenshotByName', cmds.saveScreenshotByName)
     browser.addCommand('saveAndDiffScreenshot', cmds.saveAndDiffScreenshot)
   },
-  beforeTest: test => {
-    cmds.startScreenRecording(test)
+  beforeTest: async test => {
+    await cmds.startScreenRecording(test)
   },
   afterTest: async test => {
-    await cmds.stopScreenRecording(test)
-    cmds.saveScreenshotByTest(test)
+    await Promise.all([
+      cmds.stopScreenRecording(test),
+      cmds.saveScreenshotByTest(test)
+    ])
   }
 }
 ```
