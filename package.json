@@ -1,6 +1,6 @@
 {
   "name": "wdio-screen-commands",
-  "version": "2.11.0",
+  "version": "3.0.0",
   "title": "WebdriverIO Screen Commands",
   "description": "WebdriverIO commands to capture and record browser screens.",
   "keywords": [
