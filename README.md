@@ -116,10 +116,11 @@ const defaultOptions = {
   },
   videos: {
     // shared options
+    dir: 'reports/videos',  // Videos directory
     enabled: false,         // Enable screen recordings
     deleteOnPass: false,    // Keep screen recordings when tests pass
-    startDelay: undefined,  // Seconds, execution delay after recording start
-    stopDelay: undefined,   // Seconds, execution delay before recording stop
+    startDelay: undefined,  // Delay in ms after starting the recording
+    stopDelay: undefined,   // Delay in ms before stopping the recording
     hostname: 'localhost',  // Server/device hostname
     port: 5555,             // Server/device port, defaults to 9000 for ffmpeg
     // ffmpeg options - see https://github.com/blueimp/record-screen
