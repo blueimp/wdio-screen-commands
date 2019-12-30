@@ -12,6 +12,39 @@
 
 /* global browser */
 
+/**
+ * @typedef {import('webdriverio')} WebdriverIO
+ * @typedef {import('adb-record-screen').Options} ADBOptions
+ * @typedef {import('record-screen').Options} FFmpegOptions
+ * @typedef {import('record-screen').Recording} Recording
+ * @typedef {import('record-screen').Result} RecordingResult
+ * @typedef {import('ffmpeg-image-diff').Options} ImageDiffOptions
+ * @typedef {import('ffmpeg-image-diff').Result} ImageDiffResult
+ */
+
+/**
+ * @typedef {object} ScreenshotOptions Screenshot options
+ * @property {string} [dir=reports/screenshots] Screenshots directory
+ * @property {boolean} [saveOnFail] Automatically save screenshots on test fail
+ * @property {boolean} [saveOnPass] Automatically save screenshots on test pass
+ * @property {ImageDiffOptions} [imageDiff] Image diffing options
+ */
+
+/**
+ * @typedef {object} RecordingOptions Video recording options
+ * @property {string} [dir=reports/videos] Videos directory
+ * @property {boolean} [enabled] Set to true to enable video recordings
+ * @property {boolean} [deleteOnPass] Deletes screen recordings on pass if true
+ * @property {number} [startDelay] Delay in ms after starting the recording
+ * @property {number} [stopDelay] Delay in ms before stopping the recording
+ */
+
+/* eslint-disable jsdoc/valid-types */
+/**
+ * @typedef {FFmpegOptions & ADBOptions & RecordingOptions} VideoOptions
+ */
+/* eslint-enable jsdoc/valid-types */
+
 const fs = require('fs')
 const path = require('path')
 const { promisify } = require('util')
@@ -27,58 +60,10 @@ const adbRecordScreen = require('adb-record-screen')
 const screenRecordings = new Map()
 
 /**
- * @namespace WebdriverIO
- * @typedef WebdriverIO.Test
- * @property {string} [fullTitle]
- * @property {string} [fullName]
- * @property {boolean} passed
- */
-
-/**
- * @typedef {object} Result
- * @property {string} stdout Screen recording standard output
- * @property {string} stderr Screen recording error output
- */
-
-/**
- * @typedef {object} Recording
- * @property {Promise<Result>} promise Promise for the active screen recording
- * @property {Function} stop Function to stop the screen recording
- */
-
-/**
- * @typedef {object} Options Screen recording options
- * @property {string} [hostname=localhost] Server hostname
- * @property {number} [port=5555] Server port, defaults to 9000 for ffmpeg
- * @property {string} [loglevel=info] Log verbosity level
- * @property {string} [inputFormat=x11grab] Input format
- * @property {string} [resolution] Display resolution (WIDTHxHEIGHT)
- * @property {number} [fps=15] Frames per second to record from input
- * @property {string} [videoFilter] Video filters to apply
- * @property {string} [videoCodec] Video codec
- * @property {string} [pixelFormat=yuv420p] Output pixel format
- * @property {number} [rotate] Rotate metadata, set to 90 to rotate left by 90°
- * @property {string} [display=0] X11 server display
- * @property {string} [protocol=http] Server protocol
- * @property {string} [username] Basic auth username
- * @property {string} [password] Basic auth password
- * @property {string} [pathname] URL path component
- * @property {string} [search] URL query parameter
- * @property {string} [serial] Use device with given serial
- * @property {string} [transportID] Use device with given transport ID
- * @property {number} [waitTimeout=5000] Device wait timeout (ms)
- * @property {boolean} [bugreport] If `true` adds additional info to the video
- * @property {string} [size] WIDTHxHEIGHT, defaults to native device resolution
- * @property {number} [bitRate=4000000] Bits per second, default is 4Mbps
- * @property {number} [timeLimit=180] Time limit (s), maximum is 180 (3 mins)
- * @property {number} [pullDelay=200] Delay (ms) before pulling the video file
- */
-
-/**
  * Starts a screen recording via ffmpeg or adb shell screenrecord.
  *
  * @param {string} fileName Output file name
- * @param {Options} [options] Screen recording options
+ * @param {VideoOptions} [options] Screen recording options
  * @returns {Recording} Recording object
  */
 function recordScreen(fileName, options) {
@@ -161,21 +146,13 @@ async function saveScreenshotByName(name) {
  */
 async function saveScreenshotByTest(test) {
   const options = browser.config.screenshots || {}
-  const fullTitle = test.fullTitle || test.fullName
+  const fullTitle = test.fullTitle
   if (test.passed) {
     if (options.saveOnPass) await saveScreenshotByName(fullTitle + ' PASSED')
   } else {
     if (options.saveOnFail) await saveScreenshotByName(fullTitle + ' FAILED')
   }
 }
-
-/**
- * @typedef ImageDiffResult
- * @property {number} [R] Red color differences
- * @property {number} [G] Green color differences
- * @property {number} [B] blue color differences
- * @property {number} [All] All color differences
- */
 
 /**
  * Saves and diffs a screenshot for the given name.
@@ -224,13 +201,10 @@ async function startScreenRecording(test) {
     browser.config.videos
   )
   if (!options.enabled) return
-  const fullTitle = test.fullTitle || test.fullName
-  const videoKey = browser.sessionId + ' ' + fullTitle
-  const fileName = await createFileName(fullTitle, '.mp4', options.dir)
+  const videoKey = browser.sessionId + ' ' + test.fullTitle
+  const fileName = await createFileName(test.fullTitle, '.mp4', options.dir)
   const recording = recordScreen(fileName, options)
-  options.recording = recording
-  options.fileName = fileName
-  screenRecordings.set(videoKey, options)
+  screenRecordings.set(videoKey, { options, recording, fileName })
   recording.promise.catch(err => screenRecordingLogger.error(err))
   if (options.startDelay) await browser.pause(options.startDelay)
 }
@@ -239,19 +213,19 @@ async function startScreenRecording(test) {
  * Stops the screen recording for the given test.
  *
  * @param {WebdriverIO.Test} test WebdriverIO Test
- * @returns {Promise<Result>} Resolves with the recording result
+ * @returns {Promise<RecordingResult>} Resolves with the recording result
  */
 async function stopScreenRecording(test) {
-  const videoKey = browser.sessionId + ' ' + (test.fullTitle || test.fullName)
-  const options = screenRecordings.get(videoKey)
-  if (options) {
-    const recording = options.recording
+  const videoKey = browser.sessionId + ' ' + test.fullTitle
+  const currentRecording = screenRecordings.get(videoKey)
+  if (currentRecording) {
+    const { options, recording, fileName } = currentRecording
     screenRecordings.delete(videoKey)
     if (options.stopDelay) await browser.pause(options.stopDelay)
     recording.stop()
     await recording.promise.catch(() => {}) // Handled by start function
     if (test.passed && options.deleteOnPass) {
-      await unlink(options.fileName)
+      await unlink(fileName)
     }
     return recording.promise
   }

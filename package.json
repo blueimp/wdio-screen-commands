@@ -60,9 +60,14 @@
   },
   "scripts": {
     "test": "eslint . && tsc",
+    "build": "rm -f index.d.ts && tsc -p tsconfig.d.json",
+    "preversion": "npm test",
+    "version": "npm run build && git add -A index.d.ts",
     "postversion": "git push --tags origin HEAD && npm publish"
   },
   "files": [
+    "types/index.d.ts",
+    "index.d.ts",
     "index.js"
   ],
   "main": "index.js"
