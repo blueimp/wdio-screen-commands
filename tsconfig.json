@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node", "webdriverio", "@wdio/mocha-framework"]
   }
 }
