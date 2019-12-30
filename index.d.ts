@@ -1,4 +1,3 @@
-export type WebdriverIO = typeof WebdriverIOAsync;
 export type ADBOptions = {
     serial?: string;
     transportID?: string;

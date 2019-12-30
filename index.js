@@ -10,10 +10,9 @@
 
 'use strict'
 
-/* global browser */
+/* global browser, WebdriverIO */
 
 /**
- * @typedef {import('webdriverio')} WebdriverIO
  * @typedef {import('adb-record-screen').Options} ADBOptions
  * @typedef {import('record-screen').Options} FFmpegOptions
  * @typedef {import('record-screen').Recording} Recording
