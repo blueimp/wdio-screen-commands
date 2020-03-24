@@ -106,10 +106,7 @@ async function createFileName(name, ext, baseDir = 'reports') {
           .slice(0, 2)
           .join('.'),
         caps.platformName || caps.platform,
-        (caps.platformVersion || '')
-          .split('.')
-          .slice(0, 2)
-          .join('.'),
+        (caps.platformVersion || '').split('.').slice(0, 2).join('.'),
         caps.deviceName
       ]
         .filter(s => s) // Remove empty ('', undefined, null, 0) values
