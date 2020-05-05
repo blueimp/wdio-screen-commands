@@ -68,10 +68,10 @@ module.exports = {
   beforeTest: async test => {
     await cmds.startScreenRecording(test)
   },
-  afterTest: async test => {
+  afterTest: async (test, context, result) => {
     await Promise.all([
-      cmds.stopScreenRecording(test),
-      cmds.saveScreenshotByTest(test)
+      cmds.stopScreenRecording(test, result),
+      cmds.saveScreenshotByTest(test, result)
     ])
   }
 }

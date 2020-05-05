@@ -106,8 +106,9 @@ export function saveScreenshotByName(name: string): Promise<void>;
  * Saves a screenshot for the given test.
  *
  * @param {WebdriverIO.Test} test WebdriverIO Test
+ * @param {object} result WebdriverIO Test result
  */
-export function saveScreenshotByTest(test: WebdriverIO.Test): Promise<void>;
+export function saveScreenshotByTest(test: WebdriverIO.Test, result: any): Promise<void>;
 /**
  * Saves and diffs a screenshot for the given name.
  *
@@ -125,6 +126,7 @@ export function startScreenRecording(test: WebdriverIO.Test): Promise<void>;
  * Stops the screen recording for the given test.
  *
  * @param {WebdriverIO.Test} test WebdriverIO Test
+ * @param {object} result WebdriverIO Test result
  * @returns {Promise<RecordingResult>} Resolves with the recording result
  */
-export function stopScreenRecording(test: WebdriverIO.Test): Promise<import("record-screen").Result>;
+export function stopScreenRecording(test: WebdriverIO.Test, result: any): Promise<import("record-screen").Result>;

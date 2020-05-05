@@ -139,14 +139,18 @@ async function saveScreenshotByName(name) {
  * Saves a screenshot for the given test.
  *
  * @param {WebdriverIO.Test} test WebdriverIO Test
+ * @param {object} result WebdriverIO Test result
  */
-async function saveScreenshotByTest(test) {
+async function saveScreenshotByTest(test, result) {
   const options = browser.config.screenshots || {}
-  const fullTitle = test.fullTitle
-  if (test.passed) {
-    if (options.saveOnPass) await saveScreenshotByName(fullTitle + ' PASSED')
+  if (result.passed) {
+    if (options.saveOnPass) {
+      await saveScreenshotByName(`${test.parent} ${test.title} PASSED`)
+    }
   } else {
-    if (options.saveOnFail) await saveScreenshotByName(fullTitle + ' FAILED')
+    if (options.saveOnFail) {
+      await saveScreenshotByName(`${test.parent} ${test.title} FAILED`)
+    }
   }
 }
 
@@ -197,8 +201,9 @@ async function startScreenRecording(test) {
     browser.config.videos
   )
   if (!options.enabled) return
-  const videoKey = browser.sessionId + ' ' + test.fullTitle
-  const fileName = await createFileName(test.fullTitle, '.mp4', options.dir)
+  const name = `${test.parent} ${test.title}`
+  const videoKey = `${browser.sessionId} ${name}`
+  const fileName = await createFileName(name, '.mp4', options.dir)
   const recording = recordScreen(fileName, options)
   screenRecordings.set(videoKey, { options, recording, fileName })
   recording.promise.catch(err => screenRecordingLogger.error(err))
@@ -209,10 +214,12 @@ async function startScreenRecording(test) {
  * Stops the screen recording for the given test.
  *
  * @param {WebdriverIO.Test} test WebdriverIO Test
+ * @param {object} result WebdriverIO Test result
  * @returns {Promise<RecordingResult>} Resolves with the recording result
  */
-async function stopScreenRecording(test) {
-  const videoKey = browser.sessionId + ' ' + test.fullTitle
+async function stopScreenRecording(test, result) {
+  const name = `${test.parent} ${test.title}`
+  const videoKey = `${browser.sessionId} ${name}`
   const currentRecording = screenRecordings.get(videoKey)
   if (currentRecording) {
     const { options, recording, fileName } = currentRecording
@@ -220,7 +227,7 @@ async function stopScreenRecording(test) {
     if (options.stopDelay) await browser.pause(options.stopDelay)
     recording.stop()
     await recording.promise.catch(() => {}) // Handled by start function
-    if (test.passed && options.deleteOnPass) {
+    if (result.passed && options.deleteOnPass) {
       await unlink(fileName)
     }
     return recording.promise
