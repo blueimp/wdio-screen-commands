@@ -68,7 +68,7 @@ export type ScreenshotOptions = {
     /**
      * Image diffing options
      */
-    imageDiff?: import("ffmpeg-image-diff").Options;
+    imageDiff?: ImageDiffOptions;
 };
 /**
  * Video recording options
@@ -108,14 +108,14 @@ export function saveScreenshotByName(name: string): Promise<void>;
  * @param {WebdriverIO.Test} test WebdriverIO Test
  * @param {object} result WebdriverIO Test result
  */
-export function saveScreenshotByTest(test: WebdriverIO.Test, result: any): Promise<void>;
+export function saveScreenshotByTest(test: WebdriverIO.Test, result: object): Promise<void>;
 /**
  * Saves and diffs a screenshot for the given name.
  *
  * @param {string} name Screenshot name
  * @returns {Promise<ImageDiffResult>} Resolves with the image diff results
  */
-export function saveAndDiffScreenshot(name: string): Promise<import("ffmpeg-image-diff").Result>;
+export function saveAndDiffScreenshot(name: string): Promise<ImageDiffResult>;
 /**
  * Starts a streen recording for the given test.
  *
@@ -129,4 +129,4 @@ export function startScreenRecording(test: WebdriverIO.Test): Promise<void>;
  * @param {object} result WebdriverIO Test result
  * @returns {Promise<RecordingResult>} Resolves with the recording result
  */
-export function stopScreenRecording(test: WebdriverIO.Test, result: any): Promise<import("record-screen").Result>;
+export function stopScreenRecording(test: WebdriverIO.Test, result: object): Promise<RecordingResult>;
