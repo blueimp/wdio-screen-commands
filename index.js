@@ -12,6 +12,8 @@
 
 /* global browser, WebdriverIO */
 
+/* eslint-disable jsdoc/valid-types */
+
 /**
  * @typedef {import('adb-record-screen').Options} ADBOptions
  * @typedef {import('record-screen').Options} FFmpegOptions
@@ -38,10 +40,10 @@
  * @property {number} [stopDelay] Delay in ms before stopping the recording
  */
 
-/* eslint-disable jsdoc/valid-types */
 /**
  * @typedef {FFmpegOptions & ADBOptions & RecordingOptions} VideoOptions
  */
+
 /* eslint-enable jsdoc/valid-types */
 
 const fs = require('fs')
