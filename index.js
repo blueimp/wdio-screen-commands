@@ -132,7 +132,7 @@ async function saveScreenshotByName(name) {
     browser.config.screenshots
   )
   const fileName = await createFileName(name, '.png', options.dir)
-  await browser.saveScreenshot(fileName)
+  await this.saveScreenshot(fileName)
 }
 
 /**
@@ -145,11 +145,17 @@ async function saveScreenshotByTest(test, result) {
   const options = browser.config.screenshots || {}
   if (result.passed) {
     if (options.saveOnPass) {
-      await saveScreenshotByName(`${test.parent} ${test.title} PASSED`)
+      await saveScreenshotByName.call(
+        browser,
+        `${test.parent} ${test.title} PASSED`
+      )
     }
   } else {
     if (options.saveOnFail) {
-      await saveScreenshotByName(`${test.parent} ${test.title} FAILED`)
+      await saveScreenshotByName.call(
+        browser,
+        `${test.parent} ${test.title} FAILED`
+      )
     }
   }
 }
@@ -172,7 +178,7 @@ async function saveAndDiffScreenshot(name) {
       createFileName(name + ' diff', '.png', options.dir)
     ])
     await rename(fileName, fileNameOriginal)
-    await browser.saveScreenshot(fileName)
+    await this.saveScreenshot(fileName)
     const ssim = await imageDiff(
       fileNameOriginal,
       fileName,
@@ -187,7 +193,7 @@ async function saveAndDiffScreenshot(name) {
     }
     return ssim
   }
-  await browser.saveScreenshot(fileName)
+  await this.saveScreenshot(fileName)
 }
 
 /**

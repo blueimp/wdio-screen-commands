@@ -62,8 +62,16 @@ module.exports = {
     stopDelay: 500
   },
   before: () => {
+    // Add browser commands:
     browser.addCommand('saveScreenshotByName', cmds.saveScreenshotByName)
     browser.addCommand('saveAndDiffScreenshot', cmds.saveAndDiffScreenshot)
+    // Add element commands:
+    browser.addCommand('saveScreenshotByName', cmds.saveScreenshotByName, true)
+    browser.addCommand(
+      'saveAndDiffScreenshot',
+      cmds.saveAndDiffScreenshot,
+      true
+    )
   },
   beforeTest: async test => {
     await cmds.startScreenRecording(test)
