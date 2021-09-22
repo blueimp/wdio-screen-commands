@@ -1,54 +1,11 @@
-export type ADBOptions = {
-    serial?: string;
-    transportID?: string;
-    hostname?: string;
-    port?: number;
-    waitTimeout?: number;
-    bugreport?: boolean;
-    size?: string;
-    bitRate?: number;
-    timeLimit?: number;
-    pullDelay?: number;
-};
-export type FFmpegOptions = {
-    loglevel?: string;
-    inputFormat?: string;
-    resolution?: string;
-    fps?: number;
-    videoFilter?: string;
-    videoCodec?: string;
-    pixelFormat?: string;
-    rotate?: number;
-    hostname?: string;
-    display?: string;
-    protocol?: string;
-    username?: string;
-    password?: string;
-    port?: number;
-    pathname?: string;
-    search?: string;
-};
-export type Recording = {
-    promise: Promise<import("record-screen").Result>;
-    stop: Function;
-};
-export type RecordingResult = {
-    stdout: string;
-    stderr: string;
-};
-export type ImageDiffOptions = {
-    ssim?: boolean;
-    similarity?: number;
-    blend?: number;
-    opacity?: number;
-    color?: string;
-};
-export type ImageDiffResult = {
-    R?: number;
-    G?: number;
-    B?: number;
-    All?: number;
-};
+export type ADBOptions = import('adb-record-screen').Options;
+export type FFmpegOptions = import('record-screen').Options;
+export type Recording = import('record-screen').Recording;
+export type RecordingResult = import('record-screen').Result;
+export type ImageDiffOptions = import('ffmpeg-image-diff').Options;
+export type ImageDiffResult = import('ffmpeg-image-diff').Result;
+export type WebdriverIOTest = import('@wdio/types').Frameworks.Test;
+export type WebdriverIOTestResult = import('@wdio/types').Frameworks.TestResult;
 /**
  * Screenshot options
  */
@@ -95,7 +52,7 @@ export type RecordingOptions = {
      */
     stopDelay?: number;
 };
-export type VideoOptions = import("record-screen").Options & import("adb-record-screen").Options & RecordingOptions;
+export type VideoOptions = FFmpegOptions & ADBOptions & RecordingOptions;
 /**
  * Saves a screenshot for the given name.
  *
@@ -105,10 +62,10 @@ export function saveScreenshotByName(name: string): Promise<void>;
 /**
  * Saves a screenshot for the given test.
  *
- * @param {WebdriverIO.Test} test WebdriverIO Test
- * @param {object} result WebdriverIO Test result
+ * @param {WebdriverIOTest} test WebdriverIO Test
+ * @param {WebdriverIOTestResult} result WebdriverIO Test result
  */
-export function saveScreenshotByTest(test: WebdriverIO.Test, result: object): Promise<void>;
+export function saveScreenshotByTest(test: WebdriverIOTest, result: WebdriverIOTestResult): Promise<void>;
 /**
  * Saves and diffs a screenshot for the given name.
  *
@@ -119,14 +76,14 @@ export function saveAndDiffScreenshot(name: string): Promise<ImageDiffResult>;
 /**
  * Starts a streen recording for the given test.
  *
- * @param {WebdriverIO.Test} test WebdriverIO Test
+ * @param {WebdriverIOTest} test WebdriverIO Test
  */
-export function startScreenRecording(test: WebdriverIO.Test): Promise<void>;
+export function startScreenRecording(test: WebdriverIOTest): Promise<void>;
 /**
  * Stops the screen recording for the given test.
  *
- * @param {WebdriverIO.Test} test WebdriverIO Test
- * @param {object} result WebdriverIO Test result
+ * @param {WebdriverIOTest} test WebdriverIO Test
+ * @param {WebdriverIOTestResult} result WebdriverIO Test result
  * @returns {Promise<RecordingResult>} Resolves with the recording result
  */
-export function stopScreenRecording(test: WebdriverIO.Test, result: object): Promise<RecordingResult>;
+export function stopScreenRecording(test: WebdriverIOTest, result: WebdriverIOTestResult): Promise<RecordingResult>;

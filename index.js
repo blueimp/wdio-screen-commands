@@ -10,7 +10,7 @@
 
 'use strict'
 
-/* global browser, WebdriverIO */
+/* global browser */
 
 /* eslint-disable jsdoc/valid-types */
 
@@ -21,6 +21,8 @@
  * @typedef {import('record-screen').Result} RecordingResult
  * @typedef {import('ffmpeg-image-diff').Options} ImageDiffOptions
  * @typedef {import('ffmpeg-image-diff').Result} ImageDiffResult
+ * @typedef {import('@wdio/types').Frameworks.Test} WebdriverIOTest
+ * @typedef {import('@wdio/types').Frameworks.TestResult} WebdriverIOTestResult
  */
 
 /**
@@ -140,8 +142,8 @@ async function saveScreenshotByName(name) {
 /**
  * Saves a screenshot for the given test.
  *
- * @param {WebdriverIO.Test} test WebdriverIO Test
- * @param {object} result WebdriverIO Test result
+ * @param {WebdriverIOTest} test WebdriverIO Test
+ * @param {WebdriverIOTestResult} result WebdriverIO Test result
  */
 async function saveScreenshotByTest(test, result) {
   const options = browser.config.screenshots || {}
@@ -201,7 +203,7 @@ async function saveAndDiffScreenshot(name) {
 /**
  * Starts a streen recording for the given test.
  *
- * @param {WebdriverIO.Test} test WebdriverIO Test
+ * @param {WebdriverIOTest} test WebdriverIO Test
  */
 async function startScreenRecording(test) {
   const options = Object.assign(
@@ -221,8 +223,8 @@ async function startScreenRecording(test) {
 /**
  * Stops the screen recording for the given test.
  *
- * @param {WebdriverIO.Test} test WebdriverIO Test
- * @param {object} result WebdriverIO Test result
+ * @param {WebdriverIOTest} test WebdriverIO Test
+ * @param {WebdriverIOTestResult} result WebdriverIO Test result
  * @returns {Promise<RecordingResult>} Resolves with the recording result
  */
 async function stopScreenRecording(test, result) {
