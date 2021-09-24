@@ -105,13 +105,17 @@ async function createFileName(name, ext, baseDir = 'reports') {
     sanitizeBaseName(
       [
         caps.browserName,
-        (caps.browserVersion || caps.version || '')
+        String(caps.browserVersion || caps.version || '')
           .split('.')
           .slice(0, 2)
           .join('.'),
         caps.platformName || caps.platform,
-        (caps.platformVersion || '').split('.').slice(0, 2).join('.'),
-        caps.deviceName
+        String(caps.platformVersion || caps['safari:platformVersion'] || '')
+          .split('.')
+          .slice(0, 2)
+          .join('.'),
+        caps.deviceName || caps['safari:deviceName'],
+        caps.orientation
       ]
         .filter(s => s) // Remove empty ('', undefined, null, 0) values
         .join(' ')
